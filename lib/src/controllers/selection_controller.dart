@@ -2,7 +2,7 @@
 
 import 'package:morf/src/morf.dart';
 
-class SelectionController<T> extends SelectionWithController<T, T> {
+class SelectionController<T> extends TransformableSelectionController<T, T> {
   SelectionController(
     super.morf, {
     required super.tag,
@@ -23,8 +23,8 @@ class SelectionController<T> extends SelectionWithController<T, T> {
   });
 }
 
-abstract class SelectionWithController<T, V> extends BaseController<T> {
-  SelectionWithController(
+abstract class TransformableSelectionController<T, V> extends BaseController<T> {
+  TransformableSelectionController(
     super.morf, {
     required super.tag,
     required super.label,
@@ -54,4 +54,8 @@ abstract class SelectionWithController<T, V> extends BaseController<T> {
     _items = items;
     notifyListeners();
   }
+
+  V? get transformedValue => valueTransformer?.call(value);
+
+  String? get transformedLabel => labelTransformer?.call(value);
 }
