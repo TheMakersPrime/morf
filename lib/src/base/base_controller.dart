@@ -5,8 +5,8 @@ part of '../morf.dart';
 typedef InputValidator<T> = String? Function(T? value);
 typedef ValueTransformer<T, V> = V Function(T? value);
 
-abstract class BaseInputController<T> with ChangeNotifier {
-  BaseInputController(
+abstract class BaseController<T> with ChangeNotifier {
+  BaseController(
     this.morf, {
     required this.tag,
     required this.label,
