@@ -101,6 +101,11 @@ abstract class BaseInputController<T> with ChangeNotifier {
   void onChanged(T? value) {
     onListen?.call(value);
     if (value != null) {
+      if (autoValidate) {
+        validate();
+        return;
+      }
+
       _error = null;
       notifyListeners();
     }
@@ -144,10 +149,15 @@ abstract class BaseInputController<T> with ChangeNotifier {
       'required': required,
       'label': label,
       'hint': hint,
-      'helperText': helper,
+      'helper': helper,
+      'obscureText': obscureText,
+      'eagerError': eagerError,
+      'autoValidate': autoValidate,
       'requiredMessage': requiredMessage,
       'initialValue': initialValue,
       'value': value,
+      'error': error,
+      'obscuringCharacter': obscuringCharacter,
     };
 
     return const JsonEncoder.withIndent(' ').convert(map);
