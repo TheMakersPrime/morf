@@ -16,7 +16,6 @@ abstract class BaseController<T> with ChangeNotifier {
     this.hint,
     this.helper,
     this.onListen,
-    this.initialValue,
     this.onSubmitted,
     this.obscureText = false,
     this.eagerError = false,
@@ -74,33 +73,31 @@ abstract class BaseController<T> with ChangeNotifier {
   final ValueChanged<T?>? onListen;
 
   /// Callback for when user taps on the return/enter button
-  final ValueChanged? onSubmitted;
+  final ValueChanged<T>? onSubmitted;
 
-  /// Initial value for the input field
-  T? initialValue;
-
-  /// Error text for the input field
   String? _error;
+  T? _value;
 
   //endregion
 
   //region Functions
 
-  String? get error => _error;
+  T? get value => _value;
 
-  T? get value;
+  String? get error => _error;
 
   set error(String? value) {
     _error = value;
     notifyListeners();
   }
 
-  void reset();
+  void reset() => onChanged(null);
 
   @mustCallSuper
   void onChanged(T? value) {
-    onListen?.call(value);
-    if (value != null) {
+    _value = value;
+    onListen?.call(_value);
+    if (_value != null) {
       if (autoValidate) {
         validate();
         return;
@@ -113,17 +110,17 @@ abstract class BaseController<T> with ChangeNotifier {
 
   @protected
   bool validate() {
-    if (required && value == null) {
+    if (required && _value == null) {
       _error = requiredMessage;
       notifyListeners();
       return false;
     }
 
-    if (validators != null && value != null) {
+    if (validators != null && _value != null) {
       final errorBuffer = StringBuffer();
 
       for (final validator in validators!) {
-        final error = validator(value);
+        final error = validator(_value);
         if (error != null) errorBuffer.writeln(error);
 
         if (eagerError && errorBuffer.isNotEmpty) break;
@@ -154,9 +151,8 @@ abstract class BaseController<T> with ChangeNotifier {
       'eagerError': eagerError,
       'autoValidate': autoValidate,
       'requiredMessage': requiredMessage,
-      'initialValue': initialValue,
-      'value': value,
-      'error': error,
+      'value': _value,
+      'error': _error,
       'obscuringCharacter': obscuringCharacter,
     };
 
