@@ -10,22 +10,16 @@ part 'base/base_controller.dart';
 mixin Morf {
   final Set<BaseController> _inputs = {};
 
-  void _add(BaseController input) {
-    _inputs.add(input);
-  }
-
   FormData getFormData() {
     final formMap = <String, dynamic>{};
     final confirmMap = <String, String>{};
 
     for (final input in _inputs) {
       if (input.value != null) {
-        final selectionWithTransform = input is TransformableSelectionController;
-        final selection = input is SelectionController;
-        if (selection || selectionWithTransform) {
-          final _input = input as TransformableSelectionController;
-          formMap[input.tag] = _input.transformedValue ?? input.value;
-          confirmMap[input.label] = _input.transformedLabel ?? input.value;
+        final selection = input is TransformableSelectionController;
+        if (selection) {
+          formMap[input.tag] = input.transformedValue ?? input.value;
+          confirmMap[input.label] = (input.transformedLabel ?? input.value).toString();
         } else {
           formMap[input.tag] = input.value;
           confirmMap[input.label] = input.value;
@@ -35,12 +29,15 @@ mixin Morf {
     return FormData(confirmMap: confirmMap, formMap: formMap);
   }
 
-  void fillFormData(Map<String, dynamic> data) {
+  void fillForm(Map<String, dynamic> data) {
     for (final entry in data.entries) {
       final controller = _getController(entry.key);
       if (controller != null) {
-        if (controller is TransformableSelectionController || controller is SelectionController) {
-          // TODO (Ishwor) Complete
+        if (controller is TransformableSelectionController) {
+          final resolvedValue = controller.selectionResolver?.call(controller.items, entry.value);
+          if (resolvedValue != null) {
+            controller.onChanged(resolvedValue);
+          }
         } else {
           controller.onChanged(entry.value);
         }
@@ -82,6 +79,10 @@ mixin Morf {
     } on Exception {
       return null;
     }
+  }
+
+  void _add(BaseController input) {
+    _inputs.add(input);
   }
 }
 

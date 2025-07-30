@@ -2,6 +2,8 @@
 
 import 'package:morf/src/morf.dart';
 
+typedef SelectionResolver<T> = T Function(List<T>, dynamic);
+
 class SelectionController<T> extends TransformableSelectionController<T, T> {
   SelectionController(
     super.morf, {
@@ -23,7 +25,7 @@ class SelectionController<T> extends TransformableSelectionController<T, T> {
   });
 }
 
-abstract class TransformableSelectionController<T, V> extends BaseController<T> {
+class TransformableSelectionController<T, V> extends BaseController<T> {
   TransformableSelectionController(
     super.morf, {
     required super.tag,
@@ -42,10 +44,13 @@ abstract class TransformableSelectionController<T, V> extends BaseController<T> 
     List<T> items = const [],
     this.labelTransformer,
     this.valueTransformer,
+    this.selectionResolver,
   }) : _items = items;
 
   final ValueTransformer<T, String>? labelTransformer;
   final ValueTransformer<T, V>? valueTransformer;
+  final SelectionResolver<T>? selectionResolver;
+
   List<T> _items;
 
   List<T> get items => _items;
