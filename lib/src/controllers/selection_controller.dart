@@ -20,7 +20,6 @@ class SelectionController<T> extends TransformableSelectionController<T, T> {
     super.eagerError,
     super.autoValidate,
     super.obscuringCharacter,
-    super.items,
     super.labelTransformer,
   });
 }
@@ -41,17 +40,16 @@ class TransformableSelectionController<T, V> extends BaseController<T> {
     super.eagerError,
     super.autoValidate,
     super.obscuringCharacter,
-    List<T>? items,
     this.labelTransformer,
     this.valueTransformer,
     this.selectionResolver,
-  }) : _items = items ?? <T>[];
+  });
 
   final ValueTransformer<T, String>? labelTransformer;
   final ValueTransformer<T, V>? valueTransformer;
   final SelectionResolver<T>? selectionResolver;
 
-  List<T> _items;
+  List<T> _items = [];
 
   List<T> get items => _items;
 
