@@ -41,11 +41,11 @@ class TransformableSelectionController<T, V> extends BaseController<T> {
     super.eagerError,
     super.autoValidate,
     super.obscuringCharacter,
-    List<T> items = const [],
+    List<T>? items,
     this.labelTransformer,
     this.valueTransformer,
     this.selectionResolver,
-  }) : _items = items;
+  }) : _items = items ?? <T>[];
 
   final ValueTransformer<T, String>? labelTransformer;
   final ValueTransformer<T, V>? valueTransformer;
